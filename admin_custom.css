@@ -1,0 +1,276 @@
+:root {
+    --primary-dark: #2c3e50; /* 深蓝色/深灰色，用于头部和侧边栏背景 */
+    --primary-light: #34495e; /* 浅一点的深蓝色/深灰色 */
+    --accent-blue: #3498db; /* 强调蓝 */
+    --accent-green: #2ecc71; /* 强调绿 */
+    --accent-red: #e74c3c; /* 强调红 */
+    --light-bg: #ecf0f1; /* 浅背景色 */
+    --lighter-bg: #f5f7f9; /* 更浅的背景色 */
+    --text-dark: #2c3e50; /* 深色文本 */
+    --text-light: #ecf0f1; /* 浅色文本 */
+    --border-color: #dfe6e9; /* 边框颜色 */
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --hover-effect: rgba(255, 255, 255, 0.1); /* 用于导航项的悬停效果 */
+}
+
+/* 全局 body 样式 */
+body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--lighter-bg);
+    color: var(--text-dark);
+}
+
+/* 头部样式 */
+.admin-header {
+    background: linear-gradient(90deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+    color: var(--text-light);
+    box-shadow: 0 2px 8px var(--shadow-color);
+    z-index: 1000; /* 确保头部在最上层 */
+}
+
+.admin-header h1 {
+    font-weight: 700;
+    font-size: 1.75rem; /* 更大的标题 */
+}
+
+.admin-header a {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+.admin-header a:hover {
+    background-color: var(--hover-effect);
+}
+
+/* 侧边栏样式 */
+.admin-sidebar {
+    background-color: var(--primary-dark);
+    color: var(--text-light);
+    padding-top: 2rem; /* 增加顶部内边距，避开固定头部 */
+    box-shadow: 2px 0 8px var(--shadow-color);
+    position: fixed; /* 固定侧边栏 */
+    height: 100vh; /* 撑满视口高度 */
+    top: 0;
+    left: 0;
+    overflow-y: auto; /* 允许内容溢出时滚动 */
+    z-index: 999; /* 低于头部 */
+}
+
+.admin-sidebar nav {
+    padding-top: 2rem; /* 确保导航项不被头部遮挡 */
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    border-radius: 8px; /* 圆角效果 */
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    font-size: 1.1rem; /* 稍大字体 */
+}
+
+.nav-item i {
+    font-size: 1.3rem; /* 图标稍大 */
+    margin-right: 0.8rem;
+    color: rgba(255, 255, 255, 0.7); /* 图标颜色稍浅 */
+}
+
+.nav-item:hover {
+    background-color: var(--primary-light);
+    transform: translateX(5px); /* 悬停时轻微右移 */
+}
+
+.nav-item.active {
+    background-color: var(--accent-blue); /* 选中时的背景色 */
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3); /* 选中时的阴影 */
+    position: relative;
+    overflow: hidden; /* 防止伪元素溢出 */
+}
+
+.nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px; /* 左侧强调条 */
+    background-color: var(--text-light);
+    border-radius: 3px;
+}
+
+/* 主内容区域 */
+.admin-content {
+    margin-left: 16rem; /* 留出侧边栏的空间 */
+    padding-top: 2rem; /* 避开固定头部 */
+    flex-grow: 1; /* 占据剩余空间 */
+}
+
+#dynamicContent {
+    min-height: 500px; /* 最小高度，防止内容过少时折叠 */
+    box-shadow: 0 4px 12px var(--shadow-color);
+    border: 1px solid var(--border-color);
+}
+
+/* 数据卡片样式 */
+.data-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden; /* 确保圆角可见 */
+}
+
+.data-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.data-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.data-card p {
+    font-size: 3.5rem; /* 更大的数字 */
+    font-weight: 800;
+    line-height: 1;
+}
+
+.data-card i {
+    opacity: 0.4; /* 图标更透明 */
+}
+
+/* 系统状态标签 */
+.status-tag-running {
+    background-color: #d4edda; /* 浅绿色 */
+    color: #155724; /* 深绿色文本 */
+}
+
+.status-tag-loaded {
+    background-color: #d1ecf1; /* 浅蓝色 */
+    color: #0c5460; /* 深蓝色文本 */
+}
+
+.status-tag-normal {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+/* 按钮样式 */
+#refreshCacheBtn {
+    background-color: var(--accent-blue);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+#refreshCacheBtn:hover {
+    background-color: #2880c4; /* 稍深一点的蓝色 */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.4);
+}
+
+/* 表格样式 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    border-radius: 8px;
+    overflow: hidden; /* 确保表格的圆角 */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+th, td {
+    padding: 1rem 1.25rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+th {
+    background-color: var(--lighter-bg);
+    font-weight: 600;
+    color: var(--text-dark);
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+tr:nth-child(even) {
+    background-color: #fcfdfe; /* 条纹效果 */
+}
+
+tr:hover {
+    background-color: #f0f4f7; /* 悬停效果 */
+}
+
+/* 输入框和表单样式 (Tailwind 已经提供了大部分，这里是补充) */
+.input-field {
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    color: var(--text-dark);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-field:focus {
+    border-color: var(--accent-blue);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+/* 针对动态内容加载中的文本 */
+#dynamicContent > p {
+    font-size: 1.2rem;
+    color: #7f8c8d;
+}
+
+/* 滚动条美化（Webkit 浏览器，如 Chrome, Safari） */
+::-webkit-scrollbar {
+    width: 8px; /* 垂直滚动条宽度 */
+    height: 8px; /* 水平滚动条高度 */
+}
+
+::-webkit-scrollbar-track {
+    background: var(--lighter-bg); /* 滚动条轨道背景 */
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent-blue); /* 滚动条滑块颜色 */
+    border-radius: 10px;
+    border: 2px solid var(--lighter-bg); /* 滑块周围的边框 */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #2880c4; /* 滑块悬停颜色 */
+}
+
+/* Chart.js 容器最小高度，确保图表显示 */
+canvas {
+    min-height: 300px;
+    max-width: 100%;
+}
+
+/* 添加用户管理相关样式 */
+#userTable th, #userTable td {
+    padding: 0.85rem 1.25rem;
+}
+
+#userTable tr:hover {
+    background-color: #f8fafc;
+}
+
+.edit-user-btn, .delete-user-btn {
+    transition: transform 0.2s;
+}
+
+.edit-user-btn:hover, .delete-user-btn:hover {
+    transform: scale(1.1);
+}
