@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高校专业数据分析与智能咨询系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!--    <link rel="stylesheet" href="../static/css/style.css"> </head>-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<body class="bg-gray-50 text-gray-800">
+<header class="header-gradient text-white p-4 flex justify-between items-center sticky top-0 z-50">
+    <div class="flex items-center">
+        <i class="fas fa-graduation-cap text-2xl mr-3 text-cyan-300"></i>
+        <h1 class="text-2xl font-bold tracking-tight">高校专业数据分析平台</h1>
+    </div>
+    <div class="flex space-x-3">
+        <button id="adminToggleBtn" class="btn-secondary px-4 py-2 flex items-center">
+            <i class="fas fa-user-shield mr-2"></i>管理员登录
+        </button>
+        <button class="btn-primary px-4 py-2 flex items-center" onclick="toggleAI()">
+            <i class="fas fa-robot mr-2"></i>AI 智能咨询
+        </button>
+    </div>
+</header>
+
+<div class="max-w-7xl mx-auto px-4 py-6">
+    <section class="search-section p-6 mt-4">
+        <h2 class="text-xl font-bold mb-4 text-gray-700">查询高校/专业信息</h2>
+        <div class="flex flex-wrap gap-4 items-end">
+            <div class="flex-1 min-w-[200px]">
+                <label class="block text-sm font-medium text-gray-600 mb-1">大学名称</label>
+                <div class="relative">
+                    <i class="fas fa-university absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input id="searchName" type="text" placeholder="输入大学名称..." class="input-field pl-10 w-full"
+                           list="universitySuggestions"/>
+                    <datalist id="universitySuggestions"></datalist>
+                </div>
+            </div>
+            <div class="flex-1 min-w-[200px]">
+                <label class="block text-sm font-medium text-gray-600 mb-1">省份地区</label>
+                <div class="relative">
+                    <i class="fas fa-map-marker-alt absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input id="searchProvince" type="text" placeholder="输入省份..." class="input-field pl-10 w-full"
+                           />
+                </div>
+            </div>
+            <button onclick="searchUniversity()" class="btn-primary px-6 py-3 flex items-center">
+                <i class="fas fa-search mr-2"></i>查询高校
+            </button>
+        </div>
+    </section>
+
+    <section class="mt-8">
+        <h2 class="text-xl font-bold mb-4 text-gray-700 section-title">系统数据概览</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div class="stat-card p-5 text-center">
+                <div class="flex justify-center mb-3">
+                    <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                        <i class="fas fa-school text-blue-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-blue-700" id="uniCount">0</div>
+                <div class="text-gray-600">收录高校</div>
+            </div>
+            <div class="stat-card p-5 text-center">
+                <div class="flex justify-center mb-3">
+                    <div class="w-12 h-12 rounded-full bg-teal-100 flex items-center justify-center">
+                        <i class="fas fa-book-open text-teal-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-teal-700" id="majorCount">0</div>
+                <div class="text-gray-600">专业总数</div>
+            </div>
+            <div class="stat-card p-5 text-center">
+                <div class="flex justify-center mb-3">
+                    <div class="w-12 h-12 rounded-full bg-cyan-100 flex items-center justify-center">
+                        <i class="fas fa-users text-cyan-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-cyan-700" id="userCount">0</div>
+                <div class="text-gray-600">用户访问量</div>
+            </div>
+            <div class="stat-card p-5 text-center">
+                <div class="flex justify-center mb-3">
+                    <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                        <i class="fas fa-chart-line text-green-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-green-700" id="successRate">0%</div>
+                <div class="text-gray-600">查询成功率</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mt-8">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-gray-700 section-title">高校信息展示</h2>
+            <div class="text-sm text-gray-500">共 <span class="font-bold text-blue-600" id="resultCount">0</span> 所高校
+            </div>
+        </div>
+        <div id="universityCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        </div>
+    </section>
+
+    <section class="mt-8 mb-12" id="universityRankingChartSection" style="display:none;">
+        <h2 class="text-xl font-bold mb-4 text-gray-700 section-title">当前学校近五年排名</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="chart-container">
+                <h3 class="text-center font-semibold mb-2 text-blue-700">国内排名</h3>
+                <canvas id="universityRankingChartChina"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3 class="text-center font-semibold mb-2 text-pink-600">世界排名</h3>
+                <canvas id="universityRankingChartWorld"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <section class="mt-8 mb-12" id="specialtyListSection" style="display:none;">
+        <h2 class="text-xl font-bold mb-4 text-gray-700 section-title">当前学校热门专业</h2>
+        <div class="chart-container">
+            <div id="specialtyListContent" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            </div>
+            <div id="noSpecialtyDataMessage" class="text-center text-gray-500 py-4 hidden">
+                暂无专业排名数据。
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<div id="aiWindow"
+     class="ai-window hidden fixed bottom-6 right-6 w-full max-w-md h-[500px] bg-white flex flex-col z-50">
+    <div class="ai-header p-4 font-semibold flex items-center">
+        <i class="fas fa-robot text-xl mr-2 text-cyan-300"></i>
+        <span>AI 智能咨询助手</span>
+        <button class="ml-auto text-white hover:text-cyan-200" onclick="toggleAI()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div id="aiChatLog" class="flex-1 p-4 overflow-y-auto flex flex-col gap-3 bg-gray-50">
+        <div class="ai-message p-3 text-sm">
+            <div class="font-bold text-blue-600 mb-1">AI助手</div>
+            <div>您好！我是高校专业咨询AI助手，可以为您提供以下帮助：</div>
+            <ul class="mt-2 ml-4 list-disc text-gray-700">
+                <li>查询高校详细信息</li>
+                <li>比较不同高校的专业实力</li>
+                <li>分析专业就业前景</li>
+                <li>提供选校建议</li>
+            </ul>
+            <div class="mt-2">请问有什么可以帮您的？</div>
+        </div>
+    </div>
+    <div class="flex items-center border-t p-3 bg-white">
+        <input id="aiInput" class="input-field flex-1" placeholder="请输入您的问题..."
+               onkeypress="if(event.keyCode == 13) sendAI()"/>
+        <button onclick="sendAI()" class="btn-primary ml-3 px-4 py-2">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
+</div>
+
+<div id="adminWindow"
+     class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="admin-modal w-full max-w-md p-6 relative">
+        <button id="adminCloseBtn" class="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-xl">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="flex items-center mb-5">
+            <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                <i class="fas fa-lock text-blue-600 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800">管理员登录</h3>
+        </div>
+        <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">用户名</label>
+        <div class="relative">
+            <i class="fas fa-user absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <input id="adminUsername" type="text" class="input-field w-full pl-10"
+                   placeholder="请输入用户名">
+        </div>
+    </div>
+    <div class="mb-5">
+        <label class="block text-sm font-medium text-gray-700 mb-1">密码</label>
+        <div class="relative">
+            <i class="fas fa-key absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <input id="adminPassword" type="password" class="input-field w-full pl-10 pr-10"
+                   placeholder="请输入密码"
+                   onkeypress="if(event.key === 'Enter'){ loginAdmin(); }">
+            <i id="togglePassword" class="fas fa-eye absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer hover:text-gray-600"></i>
+        </div>
+        <p id="adminError" class="text-red-500 text-sm mt-2 hidden">
+            <i class="fas fa-exclamation-circle mr-1"></i> 用户名或密码错误，请重试。
+        </p>
+    </div>
+        <button onclick="loginAdmin()" class="btn-primary w-full py-3">
+            <i class="fas fa-sign-in-alt mr-2"></i>登录管理后台
+        </button>
+    </div>
+</div>
+
+<!--<script src="../static/js/script.js"></script> -->
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
